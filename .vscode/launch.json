@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-RunnersApplication<runners>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.fitbase.runners.RunnersApplication",
+      "projectName": "runners",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-Application<runners>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.fitbase.runners.Application",
+      "projectName": "runners",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
