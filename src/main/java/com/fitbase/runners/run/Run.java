@@ -1,20 +1,34 @@
 package com.fitbase.runners.run;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
 
 public record Run(
-        Integer id,
-        // notempty using jakarta validation add import
+        @Id Integer id,
         @NotEmpty String title,
         LocalDateTime startedOn,
         LocalDateTime completedOn,
-        Integer miles,
+        @Positive Integer miles,
         Location location) {
+
     public Run {
         if (!completedOn.isAfter(startedOn)) {
-            throw new IllegalArgumentException("completedOn must be after startedOn");
+            throw new IllegalArgumentException("Completed On must be after Started On");
         }
     }
+
+    public Duration getDuration() {
+        return Duration.between(startedOn, completedOn);
+    }
+
+    public Integer getAvgPace() {
+        return Math.toIntExact(getDuration().toMinutes() / miles);
+    }
+
 }

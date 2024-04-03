@@ -1,35 +1,27 @@
 package com.fitbase.runners.run;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/runs")
+class RunController {
 
-public class RunController {
-
+    @Autowired
     private final RunRepository runRepository;
 
-    public RunController(RunRepository runRepository) {
+    RunController(RunRepository runRepository) {
         this.runRepository = runRepository;
     }
 
-    @GetMapping("/hello")
-    String home() {
-        return "hello runner";
-    }
-
-    @GetMapping("")
+    @GetMapping
     List<Run> findAll() {
         return runRepository.findAll();
     }
@@ -38,30 +30,31 @@ public class RunController {
     Run findById(@PathVariable Integer id) {
         Optional<Run> run = runRepository.findById(id);
         if (run.isEmpty()) {
-            throw new RunNotFoundException();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Run not found.");
         }
-
         return run.get();
     }
 
-    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    void create(@RequestBody Run run) {
-        runRepository.create(run);
+    @PostMapping
+    void create(@Valid @RequestBody Run run) {
+        runRepository.save(run);
     }
 
-    // put
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    void update(@RequestBody Run run, @PathVariable Integer id) {
-        runRepository.update(run, id);
-    }
-
-    // delete use deletemapping
-    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void delete(@PathVariable Integer id) {
-        runRepository.delete(id);
+    @PutMapping("/{id}")
+    void update(@Valid @RequestBody Run run, @PathVariable Integer id) {
+        runRepository.save(run);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    void delete(@PathVariable Integer id) {
+        runRepository.delete(runRepository.findById(id).get());
+    }
+
+    @GetMapping("/location/{location}")
+    List<Run> findByLocation(@PathVariable String location) {
+        return runRepository.findByLocation(location);
+    }
 }
